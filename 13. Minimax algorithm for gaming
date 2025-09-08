@@ -1,0 +1,48 @@
+# Generic Minimax Algorithm Implementation
+
+def minimax(node, depth, is_max, scores, tree):
+    """
+    node: current node in tree
+    depth: depth in tree
+    is_max: True if maximizing player, False if minimizing
+    scores: dictionary of terminal node values
+    tree: dictionary representing the game tree {node: [children]}
+    """
+    if node not in tree or depth == 0:  # leaf node
+        return scores[node]
+
+    if is_max:
+        best = -float('inf')
+        for child in tree[node]:
+            val = minimax(child, depth-1, False, scores, tree)
+            best = max(best, val)
+        return best
+    else:
+        best = float('inf')
+        for child in tree[node]:
+            val = minimax(child, depth-1, True, scores, tree)
+            best = min(best, val)
+        return best
+
+# Example Game Tree
+#        A
+#      /   \
+#     B     C
+#    / \   / \
+#   D   E F   G
+
+tree = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G']
+}
+
+scores = {  # terminal node values
+    'D': 3,
+    'E': 5,
+    'F': 2,
+    'G': 9
+}
+
+best_value = minimax('A', 2, True, scores, tree)
+print("Optimal value for the maximizing player:", best_value)
