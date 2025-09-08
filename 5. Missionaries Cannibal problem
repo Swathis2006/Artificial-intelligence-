@@ -1,0 +1,58 @@
+from collections import deque
+
+# Initial state: (M_left, C_left, Boat_side, M_right, C_right)
+start = (3, 3, 'L', 0, 0)
+goal = (0, 0, 'R', 3, 3)
+
+def is_valid(state):
+    M_left, C_left, _, M_right, C_right = state
+
+    # Negative people not possible
+    if M_left < 0 or C_left < 0 or M_right < 0 or C_right < 0:
+        return False
+
+    # Missionaries eaten (if cannibals > missionaries)
+    if (M_left > 0 and C_left > M_left) or (M_right > 0 and C_right > M_right):
+        return False
+
+    return True
+
+def get_successors(state):
+    M_left, C_left, boat, M_right, C_right = state
+    moves = [(1,0),(2,0),(0,1),(0,2),(1,1)]  # possible boat passengers
+    successors = []
+
+    for M, C in moves:
+        if boat == 'L':  # Boat going left → right
+            new_state = (M_left-M, C_left-C, 'R', M_right+M, C_right+C)
+        else:  # Boat going right → left
+            new_state = (M_left+M, C_left+C, 'L', M_right-M, C_right-C)
+
+        if is_valid(new_state):
+            successors.append(new_state)
+
+    return successors
+
+def bfs():
+    q = deque([(start, [start])])
+    visited = set([start])
+
+    while q:
+        state, path = q.popleft()
+        if state == goal:
+            return path
+
+        for s in get_successors(state):
+            if s not in visited:
+                visited.add(s)
+                q.append((s, path + [s]))
+    return None
+
+solution = bfs()
+
+if solution:
+    print("Solution found!\n")
+    for step in solution:
+        print(step)
+else:
+    print("No solution.")
