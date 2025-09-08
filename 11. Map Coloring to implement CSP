@@ -1,0 +1,43 @@
+regions = ['WA', 'NT', 'SA', 'Q', 'NSW', 'V', 'T']
+neighbors = {
+    'WA': ['NT', 'SA'],
+    'NT': ['WA', 'SA', 'Q'],
+    'SA': ['WA', 'NT', 'Q', 'NSW', 'V'],
+    'Q': ['NT', 'SA', 'NSW'],
+    'NSW': ['Q', 'SA', 'V'],
+    'V': ['SA', 'NSW'],
+    'T': []
+}
+colors = ['Red', 'Green', 'Blue']
+
+def is_safe(region, color, assignment):
+    for neighbor in neighbors[region]:
+        if neighbor in assignment and assignment[neighbor] == color:
+            return False
+    return True
+
+def map_coloring(assignment={}):
+    if len(assignment) == len(regions):
+        return assignment
+
+    # Select unassigned region
+    for region in regions:
+        if region not in assignment:
+            break
+
+    for color in colors:
+        if is_safe(region, color, assignment):
+            assignment[region] = color
+            result = map_coloring(assignment)
+            if result:
+                return result
+            assignment.pop(region)  # backtrack
+    return None
+
+solution = map_coloring()
+if solution:
+    print("Solution found:")
+    for region in regions:
+        print(f"{region}: {solution[region]}")
+else:
+    print("No solution exists")
