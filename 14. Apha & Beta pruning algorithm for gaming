@@ -1,0 +1,55 @@
+# Generic Alpha-Beta Pruning Algorithm
+
+def alpha_beta(node, is_max, alpha, beta, tree, scores):
+    """
+    node: current node
+    is_max: True if maximizing player, False if minimizing
+    alpha: best value for maximizer so far
+    beta: best value for minimizer so far
+    tree: dictionary representing game tree {node: [children]}
+    scores: dictionary of terminal node values
+    """
+    # If node is a leaf
+    if node not in tree:
+        return scores[node]
+
+    if is_max:
+        value = -float('inf')
+        for child in tree[node]:
+            value = max(value, alpha_beta(child, False, alpha, beta, tree, scores))
+            alpha = max(alpha, value)
+            if alpha >= beta:  # prune
+                break
+        return value
+    else:
+        value = float('inf')
+        for child in tree[node]:
+            value = min(value, alpha_beta(child, True, alpha, beta, tree, scores))
+            beta = min(beta, value)
+            if beta <= alpha:  # prune
+                break
+        return value
+
+# Example Game Tree
+#        A
+#      /   \
+#     B     C
+#    / \   / \
+#   D   E F   G
+
+game_tree = {
+    'A': ['B', 'C'],
+    'B': ['D', 'E'],
+    'C': ['F', 'G']
+}
+
+# Terminal node values (can represent scores of any game)
+scores = {
+    'D': 3,
+    'E': 5,
+    'F': 2,
+    'G': 9
+}
+
+optimal_value = alpha_beta('A', True, -float('inf'), float('inf'), game_tree, scores)
+print("Optimal value for maximizing player:", optimal_value)
